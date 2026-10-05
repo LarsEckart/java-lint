@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+jdk_home="$HOME/.local/share/jdks/temurin-21"
+
+if [[ ! -x "$jdk_home/bin/java" ]]; then
+  echo "Installing Temurin JDK 21"
+  archive="$(mktemp)"
+  install_directory="$(mktemp -d)"
+  trap 'rm -f "$archive"; rm -rf "$install_directory"' EXIT
+
+  curl --fail --location --retry 3 \
+    https://api.adoptium.net/v3/binary/latest/21/ga/linux/x64/jdk/hotspot/normal/eclipse \
+    --output "$archive"
+  tar -xzf "$archive" --strip-components=1 --directory "$install_directory"
+  mkdir -p "$(dirname "$jdk_home")"
+  mv "$install_directory" "$jdk_home"
+fi
+
+profile_marker="# java-lint JDK 21"
+if ! grep -Fqx "$profile_marker" "$HOME/.bash_profile" 2>/dev/null; then
+  cat >> "$HOME/.bash_profile" <<EOF
+
+$profile_marker
+export JAVA_HOME="$jdk_home"
+export PATH="\$JAVA_HOME/bin:\$PATH"
+EOF
+fi
+
+export JAVA_HOME="$jdk_home"
+export PATH="$JAVA_HOME/bin:$PATH"
+
+echo "Warming Gradle dependencies"
+./gradlew --no-daemon testClasses

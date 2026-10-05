@@ -34,6 +34,40 @@ Enable the rule in `checkstyle.xml`:
 
 The library targets Java 17 and is tested with Checkstyle 13.9.0.
 
+Checkstyle 13.9.0 requires Java 21 or newer at build and runtime.
+
+## Java convention checks
+
+The following checks implement syntax-level rules from the AIRails Java conventions:
+
+| Check | Rule |
+| --- | --- |
+| `AvoidPrivateMemberCheck` | Prefer package-private fields and methods over `private`. |
+| `AvoidFinalVariableCheck` | Disallow explicit `final` on variables, resources, patterns, and parameters, except `static final` fields. |
+| `SingleStatementLambdaCheck` | Disallow lambda blocks with more than one statement. |
+| `PreferMethodReferenceCheck` | Prefer method references for directly equivalent one-parameter lambdas. |
+| `PreferStreamToListCheck` | Prefer `Stream.toList()` over `collect(Collectors.toList())`. |
+| `AvoidOptionalParameterCheck` | Disallow `Optional` as the direct parameter type. |
+| `LoggerDeclarationCheck` | Require fields directly typed as `Logger` to be named `LOGGER` and declared `static final`. |
+| `CatchHandlingCheck` | Require every catch block to call a method named `log` or throw an exception. |
+| `MarkdownJavadocCheck` | Disallow traditional `/** */` JavaDoc; use `///` Markdown JavaDoc. |
+
+Enable the checks under `TreeWalker`:
+
+```xml
+<module name="TreeWalker">
+    <module name="io.github.larseckart.javalint.checkstyle.AvoidPrivateMemberCheck"/>
+    <module name="io.github.larseckart.javalint.checkstyle.AvoidFinalVariableCheck"/>
+    <module name="io.github.larseckart.javalint.checkstyle.SingleStatementLambdaCheck"/>
+    <module name="io.github.larseckart.javalint.checkstyle.PreferMethodReferenceCheck"/>
+    <module name="io.github.larseckart.javalint.checkstyle.PreferStreamToListCheck"/>
+    <module name="io.github.larseckart.javalint.checkstyle.AvoidOptionalParameterCheck"/>
+    <module name="io.github.larseckart.javalint.checkstyle.LoggerDeclarationCheck"/>
+    <module name="io.github.larseckart.javalint.checkstyle.CatchHandlingCheck"/>
+    <module name="io.github.larseckart.javalint.checkstyle.MarkdownJavadocCheck"/>
+</module>
+```
+
 ## Test through Maven Local
 
 No permanent Maven group is set yet. Supply a temporary group when publishing locally:
